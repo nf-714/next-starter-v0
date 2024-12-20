@@ -1,12 +1,46 @@
+import { auth, signOut } from "@/auth/auth";
+import { UserAvatarModal } from "@/components/auth/user-modal/user-modal.component";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
+  const RenderBasedOnSessionAvailability = () => {
+    if (session) {
+      return (
+        <div>
+          <p>Session:</p>
+          <pre>{JSON.stringify(session, null, 2)}</pre>
+          <form
+            action={async () => {
+              "use server";
+              await signOut();
+            }}
+          >
+            <Button type="submit">Sign Out</Button>
+          </form>
+          <UserAvatarModal isModalOpen={!session.user?.name} />
+        </div>
+      );
+    }
+    return (
+      <div>
+        <p>Not signed in</p>
+        <Link href="/sign-in">
+          {" "}
+          <Button>Click to login</Button>
+        </Link>
+      </div>
+    );
+  };
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <Image
           className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
+          src="/next.svg"
           alt="Next.js logo"
           width={180}
           height={38}
@@ -22,7 +56,7 @@ export default function Home() {
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>
-
+        <RenderBasedOnSessionAvailability />
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
@@ -32,7 +66,7 @@ export default function Home() {
           >
             <Image
               className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
+              src="/vercel.svg"
               alt="Vercel logomark"
               width={20}
               height={20}
@@ -58,7 +92,7 @@ export default function Home() {
         >
           <Image
             aria-hidden
-            src="https://nextjs.org/icons/file.svg"
+            src="/file.svg"
             alt="File icon"
             width={16}
             height={16}
@@ -73,7 +107,7 @@ export default function Home() {
         >
           <Image
             aria-hidden
-            src="https://nextjs.org/icons/window.svg"
+            src="/window.svg"
             alt="Window icon"
             width={16}
             height={16}
@@ -88,7 +122,7 @@ export default function Home() {
         >
           <Image
             aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
+            src="/globe.svg"
             alt="Globe icon"
             width={16}
             height={16}
